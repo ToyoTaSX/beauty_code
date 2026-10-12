@@ -1,6 +1,6 @@
 ---
 // Контакты: адрес, часы, как пройти, телефон, карта 2ГИС.
-// Карта грузится, только когда до неё долистали.
+// Карта (2GIS Maps API 2.0, без ключа) грузится, только когда до неё долистали.
 import ContactButtons from './ContactButtons.astro';
 import { site } from '../lib/data';
 ---
@@ -8,7 +8,10 @@ import { site } from '../lib/data';
   <dl class="contacts__info">
     <div>
       <dt class="caption">Адрес</dt>
-      <dd>{site.address}</dd>
+      <dd>
+        {site.address}
+        <a class="contacts__route" href={site.links.twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>
+      </dd>
     </div>
     <div>
       <dt class="caption">Часы работы</dt>
@@ -26,15 +29,20 @@ import { site } from '../lib/data';
     </div>
   </dl>
 
-  <div class="contacts__map" data-map={site.mapEmbedUrl || undefined}>
-    {site.mapEmbedUrl ? (
-      <p class="caption">Карта загрузится при прокрутке</p>
-    ) : (
-      <p class="caption">
-        Карта 2ГИС появится, когда будет точный адрес.
-        {site.links.twoGis && <a href={site.links.twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>}
-      </p>
-    )}
+  <div
+    class="contacts__map"
+    data-map
+    data-lat={site.map.lat}
+    data-lon={site.map.lon}
+    data-zoom={site.map.zoom}
+    data-label={`${site.name}<br>${site.address}`}
+    role="region"
+    aria-label="Карта 2ГИС"
+  >
+    <p class="caption">
+      Карта загружается.
+      <a href={site.links.twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>
+    </p>
   </div>
 </div>
 
@@ -44,10 +52,17 @@ import { site } from '../lib/data';
   .contacts__info dd { font-weight: 600; }
   .contacts__info dd :global(.contact) { font-weight: 400; margin-top: var(--s2); }
   .contacts__hours { display: block; font-variant-numeric: tabular-nums; }
+  .contacts__route {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 400;
+  }
   .contacts__map {
+    position: relative;
     display: grid;
     place-items: center;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 4 / 5;
     padding: var(--s5);
     background: var(--bg-alt);
     border: 1px solid var(--line);
@@ -55,29 +70,57 @@ import { site } from '../lib/data';
     text-align: center;
     overflow: hidden;
   }
-  .contacts__map :global(iframe) { width: 100%; height: 100%; border: 0; }
-  .contacts__map:has(iframe) { padding: 0; }
+  .contacts__map.is-ready { padding: 0; display: block; }
+  .contacts__map :global(.dg-map) { width: 100%; height: 100%; }
+  /* глобальный img { max-width: 100%; height: auto } ломает тайлы и маркер */
+  .contacts__map :global(.dg-map img) { max-width: none; height: revert-layer; display: revert; }
 
+  @media (min-width: 720px) {
+    .contacts__map { aspect-ratio: 3 / 2; }
+  }
   @media (min-width: 1080px) {
     .contacts { grid-template-columns: 5fr 7fr; gap: var(--s7); }
   }
 </style>
 
 <script>
-  const map = document.querySelector<HTMLElement>('[data-map]');
-  if (map) {
+  type DG = {
+    then(cb: () => void): void;
+    map(el: HTMLElement, opts: object): object;
+    marker(latlng: [number, number]): { addTo(m: object): { bindPopup(html: string): { openPopup(): void } } };
+  };
+
+  const box = document.querySelector<HTMLElement>('[data-map]');
+  if (box) {
+    const init = () => {
+      // loader.js кладёт в window.DG заглушку и подменяет её после загрузки API,
+      // поэтому настоящий DG берём внутри then.
+      const getDG = () => (window as unknown as { DG: DG }).DG;
+      getDG().then(() => {
+        const DG = getDG();
+        const { lat, lon, zoom, label } = box.dataset;
+        const center: [number, number] = [Number(lat), Number(lon)];
+        const el = document.createElement('div');
+        el.className = 'dg-map';
+        box.replaceChildren(el);
+        box.classList.add('is-ready');
+        const map = DG.map(el, { center, zoom: Number(zoom), fullscreenControl: false, scrollWheelZoom: false });
+        DG.marker(center).addTo(map).bindPopup(label!).openPopup();
+      });
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         io.disconnect();
-        const frame = document.createElement('iframe');
-        frame.src = map.dataset.map!;
-        frame.title = 'Карта 2ГИС';
-        frame.loading = 'lazy';
-        map.replaceChildren(frame);
+        const s = document.createElement('script');
+        s.src = 'https://maps.api.2gis.ru/2.0/loader.js?pkg=full';
+        s.async = true;
+        s.onload = init;
+        document.head.append(s);
       },
-      { rootMargin: '200px' },
+      { rootMargin: '300px' },
     );
-    io.observe(map);
+    io.observe(box);
   }
 </script>

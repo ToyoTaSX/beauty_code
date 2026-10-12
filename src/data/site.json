@@ -1,5 +1,5 @@
 {
-  "example": true,
+  "example": false,
   "name": "Код красоты",
   "tagline": "Парикмахерская в Челябинске",
   "phone": "+7 982 304-35-61",
@@ -7,13 +7,23 @@
   "address": "Челябинск, ул. Конструктора Духова, 12, кв. 74",
   "howToGet": "",
   "hours": [
-    { "days": "Пример", "time": "часы уточняются" }
+    {
+      "days": "Ежедневно",
+      "time": "10:00-19:00"
+    }
   ],
   "links": {
     "vk": "https://vk.ru/club238401112",
+    "twoGis": "https://2gis.ru/chelyabinsk/geo/70030076703536251/61.545264,55.170321"
+  },
+  "reviews": {
     "twoGis": "",
     "yandexMaps": ""
   },
-  "mapEmbedUrl": "",
+  "map": {
+    "lat": 55.170321,
+    "lon": 61.545264,
+    "zoom": 17
+  },
   "heroPhoto": "works/alfia-05.jpg"
 }

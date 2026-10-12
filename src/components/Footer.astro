@@ -5,8 +5,7 @@ const year = new Date().getFullYear();
 const social = [
   { href: telegramHref(), label: 'Telegram' },
   site.links.vk && { href: site.links.vk, label: 'ВКонтакте' },
-  site.links.twoGis && { href: site.links.twoGis, label: '2ГИС' },
-  site.links.yandexMaps && { href: site.links.yandexMaps, label: 'Яндекс Карты' },
+  { href: site.links.twoGis, label: '2ГИС' },
 ].filter(Boolean) as { href: string; label: string }[];
 ---
 <footer class="footer section--deep">

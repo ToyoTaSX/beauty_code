@@ -19,10 +19,15 @@ const Site = z.object({
   hours: z.array(z.object({ days: z.string(), time: z.string() })).min(1),
   links: z.object({
     vk: z.string(),
+    /** Дом на карте 2ГИС (не карточка салона). */
+    twoGis: z.url(),
+  }),
+  /** Карточки салона с отзывами. Пусто - блок отзывов скрыт. */
+  reviews: z.object({
     twoGis: z.string(),
     yandexMaps: z.string(),
   }),
-  mapEmbedUrl: z.string(),
+  map: z.object({ lat: z.number(), lon: z.number(), zoom: z.number().int().min(10).max(19) }),
   heroPhoto: z.string(),
 });
 

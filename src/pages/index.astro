@@ -13,12 +13,12 @@ import Footer from '../components/Footer.astro';
 import { site, masters } from '../lib/data';
 
 const reviewLinks = [
-  site.links.yandexMaps && { href: site.links.yandexMaps, label: 'Отзывы на Яндекс Картах' },
-  site.links.twoGis && { href: site.links.twoGis, label: 'Отзывы в 2ГИС' },
+  site.reviews.yandexMaps && { href: site.reviews.yandexMaps, label: 'Отзывы на Яндекс Картах' },
+  site.reviews.twoGis && { href: site.reviews.twoGis, label: 'Отзывы в 2ГИС' },
 ].filter(Boolean) as { href: string; label: string }[];
 ---
 <Base
-  title={`${site.name} - ${site.tagline.toLowerCase()}`}
+  title={`${site.name} - ${site.tagline}`}
   description={`${site.tagline}: стрижки, окрашивание, укладки. Запись по телефону ${site.phone} или в Telegram.`}
 >
   <Header />
