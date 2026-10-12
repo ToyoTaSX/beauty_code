@@ -1,0 +1,67 @@
+---
+import { site, telHref, telegramHref } from '../lib/data';
+
+const year = new Date().getFullYear();
+const social = [
+  { href: telegramHref(), label: 'Telegram' },
+  site.links.vk && { href: site.links.vk, label: 'ВКонтакте' },
+  site.links.twoGis && { href: site.links.twoGis, label: '2ГИС' },
+  site.links.yandexMaps && { href: site.links.yandexMaps, label: 'Яндекс Карты' },
+].filter(Boolean) as { href: string; label: string }[];
+---
+<footer class="footer section--deep">
+  <div class="container footer__grid">
+    <div class="footer__col">
+      <p class="footer__logo">{site.name}</p>
+      <p class="caption">{site.tagline}</p>
+    </div>
+    <nav class="footer__col" aria-label="Разделы">
+      <p class="eyebrow">Разделы</p>
+      <ul>
+        <li><a href="#prices">Цены</a></li>
+        <li><a href="#masters">Мастера</a></li>
+        <li><a href="#works">Работы</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+      </ul>
+    </nav>
+    <div class="footer__col">
+      <p class="eyebrow">Мы в сети</p>
+      <ul>
+        {social.map((s) => <li><a href={s.href} target="_blank" rel="noopener">{s.label}</a></li>)}
+      </ul>
+    </div>
+    <div class="footer__col">
+      <p class="eyebrow">Контакты</p>
+      <ul>
+        <li><a href={telHref(site.phone)}>{site.phone}</a></li>
+        <li class="caption">{site.address}</li>
+        {site.hours.map((h) => <li class="caption">{h.days}: {h.time}</li>)}
+      </ul>
+    </div>
+  </div>
+  <div class="container footer__bottom caption">© {year} {site.name}</div>
+</footer>
+
+<style>
+  .footer { padding-block: var(--s7) var(--s5); }
+  .footer__grid { display: grid; gap: var(--s6); }
+  .footer__col { display: grid; gap: var(--s3); align-content: start; }
+  .footer__col ul { display: grid; gap: var(--s1); }
+  .footer__col a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--deep-ink);
+    text-decoration: none;
+  }
+  .footer__col a:hover { color: var(--deep-accent); }
+  .footer__logo { font-family: var(--font-serif); font-size: 22px; }
+  .footer__bottom { margin-top: var(--s7); padding-top: var(--s5); border-top: 1px solid rgb(243 235 226 / .15); }
+
+  @media (min-width: 720px) {
+    .footer__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1080px) {
+    .footer__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

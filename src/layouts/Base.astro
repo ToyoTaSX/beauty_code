@@ -1,0 +1,36 @@
+---
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import '../styles/base.css';
+import prataCyr from '@fontsource/prata/files/prata-cyrillic-400-normal.woff2?url';
+import { site } from '../lib/data';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#f7f2ec" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={site.name} />
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+    <link rel="preload" href={prataCyr} as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <a class="skip visually-hidden" href="#main">К содержанию</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,83 @@
+---
+// Контакты: адрес, часы, как пройти, телефон, карта 2ГИС.
+// Карта грузится, только когда до неё долистали.
+import ContactButtons from './ContactButtons.astro';
+import { site } from '../lib/data';
+---
+<div class="contacts">
+  <dl class="contacts__info">
+    <div>
+      <dt class="caption">Адрес</dt>
+      <dd>{site.address}</dd>
+    </div>
+    <div>
+      <dt class="caption">Часы работы</dt>
+      <dd>{site.hours.map((h) => <span class="contacts__hours">{h.days}: {h.time}</span>)}</dd>
+    </div>
+    {site.howToGet && (
+      <div>
+        <dt class="caption">Как пройти</dt>
+        <dd>{site.howToGet}</dd>
+      </div>
+    )}
+    <div>
+      <dt class="caption">Запись</dt>
+      <dd><ContactButtons /></dd>
+    </div>
+  </dl>
+
+  <div class="contacts__map" data-map={site.mapEmbedUrl || undefined}>
+    {site.mapEmbedUrl ? (
+      <p class="caption">Карта загрузится при прокрутке</p>
+    ) : (
+      <p class="caption">
+        Карта 2ГИС появится, когда будет точный адрес.
+        {site.links.twoGis && <a href={site.links.twoGis} target="_blank" rel="noopener">Открыть в 2ГИС</a>}
+      </p>
+    )}
+  </div>
+</div>
+
+<style>
+  .contacts { display: grid; gap: var(--s6); }
+  .contacts__info { display: grid; gap: var(--s5); align-content: start; }
+  .contacts__info dd { font-weight: 600; }
+  .contacts__info dd :global(.contact) { font-weight: 400; margin-top: var(--s2); }
+  .contacts__hours { display: block; font-variant-numeric: tabular-nums; }
+  .contacts__map {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 3 / 2;
+    padding: var(--s5);
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-align: center;
+    overflow: hidden;
+  }
+  .contacts__map :global(iframe) { width: 100%; height: 100%; border: 0; }
+  .contacts__map:has(iframe) { padding: 0; }
+
+  @media (min-width: 1080px) {
+    .contacts { grid-template-columns: 5fr 7fr; gap: var(--s7); }
+  }
+</style>
+
+<script>
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  if (map) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        const frame = document.createElement('iframe');
+        frame.src = map.dataset.map!;
+        frame.title = 'Карта 2ГИС';
+        frame.loading = 'lazy';
+        map.replaceChildren(frame);
+      },
+      { rootMargin: '200px' },
+    );
+    io.observe(map);
+  }
+</script>

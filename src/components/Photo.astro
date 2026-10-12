@@ -1,0 +1,43 @@
+---
+// Фото из src/images (AVIF + WebP через astro:assets) или заглушка «Фото скоро».
+import { Picture } from 'astro:assets';
+import { image } from '../lib/data';
+
+interface Props {
+  src: string;
+  alt: string;
+  ratio: '4x5' | '3x2' | '16x9';
+  sizes: string;
+  eager?: boolean;
+  class?: string;
+}
+const { src, alt, ratio, sizes, eager = false, class: className } = Astro.props;
+const img = image(src);
+const [w, h] = ratio.split('x').map(Number);
+---
+{img ? (
+  <Picture
+    src={img}
+    alt={alt}
+    formats={['avif', 'webp']}
+    widths={[360, 540, 720, 1080, 1440].filter((x) => x <= img.width)}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+    class:list={['photo', className]}
+    style={`aspect-ratio: ${w} / ${h}`}
+  />
+) : (
+  <div class:list={['photo-stub', `photo-stub--${ratio}`, className]} style={`aspect-ratio: ${w} / ${h}`} role="img" aria-label={alt}>
+    Фото скоро
+  </div>
+)}
+
+<style>
+  .photo {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+</style>

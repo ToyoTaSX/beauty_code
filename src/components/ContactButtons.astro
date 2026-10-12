@@ -1,0 +1,39 @@
+---
+// «Кнопки связи» (STANDARD.md, раздел 5): «Позвонить» - главная,
+// «Написать в Telegram» - контурная, номер текстом рядом.
+import Icon from './Icon.astro';
+import { site, telHref, telegramHref } from '../lib/data';
+
+interface Props {
+  onDeep?: boolean;
+  showPhone?: boolean;
+}
+const { onDeep = false, showPhone = true } = Astro.props;
+---
+<div class:list={['contact', { 'on-deep': onDeep }]}>
+  <div class="contact__buttons">
+    <a class="btn btn--primary" href={telHref(site.phone)}>
+      <Icon name="phone" />Позвонить
+    </a>
+    <a class="btn btn--outline" href={telegramHref()} target="_blank" rel="noopener">
+      <Icon name="telegram" />Написать в Telegram
+    </a>
+  </div>
+  {showPhone && (
+    <p class="contact__phone">
+      <a href={telHref(site.phone)}>{site.phone}</a>
+    </p>
+  )}
+</div>
+
+<style>
+  .contact { display: grid; gap: var(--s3); }
+  .contact__buttons { display: grid; gap: var(--s3); }
+  .contact__phone { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .contact__phone a { color: inherit; text-decoration: none; }
+  .contact__phone a:hover { text-decoration: underline; }
+
+  @media (min-width: 720px) {
+    .contact__buttons { display: flex; flex-wrap: wrap; }
+  }
+</style>

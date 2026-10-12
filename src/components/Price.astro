@@ -1,0 +1,171 @@
+---
+// Прайс (STANDARD.md, правила прайса). Данные только из src/data/prices.json.
+import Icon from './Icon.astro';
+import ContactButtons from './ContactButtons.astro';
+import { prices, formatPrice } from '../lib/data';
+---
+<div class="price">
+  {prices.example && <p class="example-badge price__example">Пример: настоящий прайс будет взят у салона</p>}
+
+  <nav class="price__chips" aria-label="Категории услуг">
+    {prices.categories.map((c) => <a class="price__chip" href={`#price-${c.id}`}>{c.title}</a>)}
+  </nav>
+
+  <div class="price__groups" data-accordion>
+    {prices.categories.map((c, i) => (
+      <section class="price__group" id={`price-${c.id}`}>
+        <h3>
+          <button
+            class="price__head"
+            type="button"
+            aria-expanded={i === 0 ? 'true' : 'false'}
+            aria-controls={`price-p-${c.id}`}
+            data-accordion-trigger
+          >
+            {c.title}
+            <Icon name="chevron" />
+          </button>
+        </h3>
+        <ul class="price__list" id={`price-p-${c.id}`} data-open={i === 0 ? 'true' : 'false'}>
+          {c.items.map((item) => (
+            <li class="price__row">
+              <span class="price__name">
+                {item.name}
+                {item.hint && <span class="price__hint">{item.hint}</span>}
+              </span>
+              <span class="price__dots" aria-hidden="true"></span>
+              <span class="price__value">{formatPrice(item.from)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <div class="price__footer">
+    <p class="caption text">{prices.note}</p>
+    <ContactButtons showPhone={false} />
+  </div>
+</div>
+
+<style>
+  .price { display: grid; gap: var(--s5); }
+  .price__example { justify-self: start; }
+
+  .price__chips {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    display: flex;
+    gap: var(--s2);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--s2) var(--gutter);
+    background: var(--bg-alt);
+  }
+  .price__chips::-webkit-scrollbar { display: none; }
+  .price__chip {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--s4);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .price__chip:hover { border-color: var(--ink); }
+
+  .price__groups { display: grid; gap: var(--s3); }
+  .price__group {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    scroll-margin-top: calc(var(--header-h) + 64px);
+  }
+  .price__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    width: 100%;
+    min-height: 56px;
+    padding: var(--s3) var(--s4);
+    border: 0;
+    background: none;
+    font-size: inherit;
+    font-weight: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .price__head :global(svg) { width: 20px; height: 20px; flex: none; transition: transform .2s; }
+  .price__head[aria-expanded='true'] :global(svg) { transform: rotate(180deg); }
+
+  .price__list { display: none; padding: 0 var(--s4) var(--s4); }
+  .price__list[data-open='true'] { display: grid; }
+  .price__row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s2);
+    padding-block: var(--s3);
+    border-top: 1px solid var(--line);
+  }
+  .price__name { display: grid; gap: var(--s1); }
+  .price__hint { font-size: 14px; color: var(--muted); }
+  .price__dots { flex: 1; min-width: var(--s4); border-bottom: 1px dotted var(--line); }
+  .price__value {
+    flex: none;
+    font-size: 17px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .price__footer { display: grid; gap: var(--s4); margin-top: var(--s3); }
+
+  @media (min-width: 720px) {
+    .price__chips { position: static; flex-wrap: wrap; margin: 0; padding: 0; background: none; }
+    .price__head { cursor: default; padding: var(--s5) var(--s5) var(--s3); }
+    .price__head :global(svg) { display: none; }
+    .price__list,
+    .price__list[data-open='false'] { display: grid; padding: 0 var(--s5) var(--s4); }
+    .price__value { font-size: 18px; }
+  }
+  @media (min-width: 1080px) {
+    .price__groups { grid-template-columns: 1fr 1fr; gap: var(--grid-gap); align-items: start; }
+  }
+</style>
+
+<script>
+  // На телефоне группы - раскрывашки, открыта одна за раз. От 720 px открыты все.
+  const wide = window.matchMedia('(min-width: 720px)');
+  const root = document.querySelector<HTMLElement>('[data-accordion]');
+  if (root) {
+    const triggers = [...root.querySelectorAll<HTMLButtonElement>('[data-accordion-trigger]')];
+    const set = (btn: HTMLButtonElement, open: boolean) => {
+      btn.setAttribute('aria-expanded', String(open));
+      document.getElementById(btn.getAttribute('aria-controls')!)!.dataset.open = String(open);
+    };
+    const openOnly = (btn: HTMLButtonElement) => {
+      triggers.forEach((b) => set(b, b === btn));
+    };
+    for (const btn of triggers) {
+      btn.addEventListener('click', () => {
+        if (wide.matches) return;
+        if (btn.getAttribute('aria-expanded') === 'true') set(btn, false);
+        else openOnly(btn);
+      });
+    }
+    // Тап по чипу на телефоне раскрывает нужную группу.
+    for (const chip of document.querySelectorAll<HTMLAnchorElement>('.price__chip')) {
+      chip.addEventListener('click', () => {
+        const btn = document.querySelector<HTMLButtonElement>(`${chip.hash} [data-accordion-trigger]`);
+        if (btn && !wide.matches) openOnly(btn);
+      });
+    }
+  }
+</script>

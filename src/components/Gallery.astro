@@ -1,0 +1,123 @@
+---
+// Галерея работ: лента фото 4:5, тап открывает фото крупно,
+// листается свайпом и стрелками.
+import { getImage } from 'astro:assets';
+import Rail from './Rail.astro';
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { gallery, image } from '../lib/data';
+
+const big = await Promise.all(
+  gallery.map(async (item) => {
+    const img = image(item.photo)!;
+    const out = await getImage({ src: img, width: Math.min(1440, img.width), format: 'webp' });
+    return { src: out.src, alt: item.alt };
+  }),
+);
+const stubs = gallery.length === 0 ? [1, 2, 3, 4] : [];
+---
+<Rail id="works-rail" label="Фото работ">
+  {gallery.map((item, i) => (
+    <button class="work" type="button" data-lightbox-open={i} aria-label={`Открыть фото: ${item.alt}`}>
+      <Photo src={item.photo} alt={item.alt} ratio="4x5" sizes="(min-width: 1080px) 25vw, (min-width: 720px) 33vw, 72vw" />
+    </button>
+  ))}
+  {stubs.map(() => <Photo src="" alt="Фото работы" ratio="4x5" sizes="72vw" />)}
+</Rail>
+
+{big.length > 0 && (
+  <dialog class="lightbox" data-lightbox aria-label="Фото работы">
+    <img class="lightbox__img" alt="" data-lightbox-img />
+    <button class="lightbox__btn lightbox__close" type="button" data-lightbox-close aria-label="Закрыть"><Icon name="close" /></button>
+    <button class="lightbox__btn lightbox__prev" type="button" data-lightbox-prev aria-label="Предыдущее фото"><Icon name="arrow-left" /></button>
+    <button class="lightbox__btn lightbox__next" type="button" data-lightbox-next aria-label="Следующее фото"><Icon name="arrow-right" /></button>
+    <script type="application/json" data-lightbox-items set:html={JSON.stringify(big)} />
+  </dialog>
+)}
+
+<style>
+  .work {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    border-radius: var(--radius);
+  }
+
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--deep);
+    color: var(--deep-ink);
+    overscroll-behavior: contain;
+  }
+  .lightbox::backdrop { background: var(--deep); }
+  .lightbox[open] { display: grid; place-items: center; }
+  .lightbox__img {
+    max-width: 100%;
+    max-height: 100dvh;
+    object-fit: contain;
+    touch-action: pan-y;
+  }
+  .lightbox__btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: rgb(43 33 28 / .6);
+    color: var(--deep-ink);
+    cursor: pointer;
+  }
+  .lightbox__btn :global(svg) { width: 24px; height: 24px; }
+  .lightbox__close { top: var(--s4); right: var(--s4); }
+  .lightbox__prev { left: var(--s4); top: 50%; translate: 0 -50%; }
+  .lightbox__next { right: var(--s4); top: 50%; translate: 0 -50%; }
+  .lightbox :focus-visible { outline-color: var(--deep-accent); }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+  if (dialog) {
+    const items: { src: string; alt: string }[] = JSON.parse(
+      dialog.querySelector('[data-lightbox-items]')!.textContent!,
+    );
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    let index = 0;
+
+    const show = (i: number) => {
+      index = (i + items.length) % items.length;
+      img.src = items[index].src;
+      img.alt = items[index].alt;
+    };
+
+    document.querySelectorAll<HTMLButtonElement>('[data-lightbox-open]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        show(Number(btn.dataset.lightboxOpen));
+        dialog.showModal();
+      });
+    });
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(index - 1));
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(index + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(index - 1);
+      if (e.key === 'ArrowRight') show(index + 1);
+    });
+
+    let startX = 0;
+    img.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+    img.addEventListener('pointerup', (e) => {
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
+    });
+  }
+</script>

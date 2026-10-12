@@ -1,0 +1,63 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  /** id ленты, которой управляют стрелки (только от 720 px). */
+  railId?: string;
+  id?: string;
+}
+const { eyebrow, title, subtitle, railId, id } = Astro.props;
+---
+<header class="st">
+  <div class="st__text">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h2 id={id}><Fragment set:html={title} /></h2>
+    {subtitle && <p class="st__sub text">{subtitle}</p>}
+  </div>
+  {railId && (
+    <div class="st__arrows">
+      <button class="st__arrow" type="button" data-rail-prev={railId} aria-label="Назад">
+        <Icon name="arrow-left" />
+      </button>
+      <button class="st__arrow" type="button" data-rail-next={railId} aria-label="Вперёд">
+        <Icon name="arrow-right" />
+      </button>
+    </div>
+  )}
+</header>
+
+<style>
+  .st {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--s5);
+    margin-bottom: var(--s6);
+  }
+  .st__text { display: grid; gap: var(--s3); }
+  .st__sub { color: var(--muted); }
+  :global(.section--deep) .st__sub { color: var(--deep-muted); }
+  .st__arrows { display: none; gap: var(--s2); }
+  .st__arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .st__arrow:hover { border-color: var(--ink); }
+  .st__arrow:disabled { opacity: .4; cursor: default; }
+  .st__arrow :global(svg) { width: 20px; height: 20px; }
+
+  @media (min-width: 720px) {
+    .st { margin-bottom: var(--s7); }
+    .st__arrows { display: flex; }
+  }
+</style>

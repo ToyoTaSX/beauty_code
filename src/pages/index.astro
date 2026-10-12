@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+import Price from '../components/Price.astro';
+import Rail from '../components/Rail.astro';
+import MasterCard from '../components/MasterCard.astro';
+import Gallery from '../components/Gallery.astro';
+import Conversion from '../components/Conversion.astro';
+import Contacts from '../components/Contacts.astro';
+import Footer from '../components/Footer.astro';
+import { site, masters } from '../lib/data';
+
+const reviewLinks = [
+  site.links.yandexMaps && { href: site.links.yandexMaps, label: 'Отзывы на Яндекс Картах' },
+  site.links.twoGis && { href: site.links.twoGis, label: 'Отзывы в 2ГИС' },
+].filter(Boolean) as { href: string; label: string }[];
+---
+<Base
+  title={`${site.name} - ${site.tagline.toLowerCase()}`}
+  description={`${site.tagline}: стрижки, окрашивание, укладки. Запись по телефону ${site.phone} или в Telegram.`}
+>
+  <Header />
+  <main id="main">
+    <Hero />
+
+    <section class="section section--alt" aria-labelledby="prices">
+      <div class="container">
+        <SectionTitle id="prices" eyebrow="Цены" title="Услуги и цены" subtitle="Полный прайс салона. Точную цену мастер назовёт до начала работы." />
+        <Price />
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="masters">
+      <div class="container">
+        <SectionTitle id="masters" eyebrow="Команда" title="Мастера" railId="masters-rail" />
+        <Rail id="masters-rail" label="Мастера">
+          {masters.map((m) => <MasterCard {...m} />)}
+        </Rail>
+      </div>
+    </section>
+
+    <Conversion photo="works/olga-08.jpg" title="Запишитесь на удобное время" text="Позвоните или напишите в Telegram - ответим и подберём мастера." />
+
+    <section class="section" aria-labelledby="works">
+      <div class="container">
+        <SectionTitle id="works" eyebrow="Портфолио" title="Наши работы" railId="works-rail" />
+        <Gallery />
+      </div>
+    </section>
+
+    {reviewLinks.length > 0 && (
+      <section class="section section--alt" aria-labelledby="reviews">
+        <div class="container">
+          <SectionTitle id="reviews" eyebrow="Отзывы" title="Что говорят клиенты" subtitle="Настоящие отзывы - на картах." />
+          <ul class="reviews">
+            {reviewLinks.map((l) => <li><a class="btn btn--outline" href={l.href} target="_blank" rel="noopener">{l.label}</a></li>)}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <section class="section" aria-labelledby="contacts">
+      <div class="container">
+        <SectionTitle id="contacts" eyebrow="Контакты" title="Как нас найти" />
+        <Contacts />
+      </div>
+    </section>
+
+    <Conversion photo="works/olga-07.jpg" title="Остались вопросы?" text="Напишите мастеру в Telegram или позвоните - всё расскажем." />
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .reviews { display: flex; flex-wrap: wrap; gap: var(--s3); }
+</style>

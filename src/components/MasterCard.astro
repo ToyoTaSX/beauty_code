@@ -1,0 +1,39 @@
+---
+import Photo from './Photo.astro';
+import Icon from './Icon.astro';
+import { telegramHref } from '../lib/data';
+
+interface Props {
+  name: string;
+  role: string;
+  telegram: string;
+  photo: string;
+  example: boolean;
+}
+const { name, role, telegram, photo, example } = Astro.props;
+---
+<article class="master">
+  <Photo src={photo} alt={`${name}, ${role}`} ratio="4x5" sizes="(min-width: 1080px) 25vw, (min-width: 720px) 33vw, 72vw" />
+  <div class="master__body">
+    <h3>{name}</h3>
+    <p class="caption">{role}</p>
+    {example && <p class="example-badge">Пример</p>}
+  </div>
+  <a class="btn btn--outline master__btn" href={telegramHref(telegram)} target="_blank" rel="noopener">
+    <Icon name="telegram" />Написать мастеру
+  </a>
+</article>
+
+<style>
+  .master {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--s4);
+    padding: var(--s3);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .master__body { display: grid; gap: var(--s1); align-content: start; justify-items: start; }
+  .master__btn { width: 100%; }
+</style>

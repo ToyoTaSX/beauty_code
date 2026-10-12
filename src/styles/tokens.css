@@ -1,0 +1,48 @@
+/* Токены из docs/STANDARD.md, раздел 4. Смена стиля = замена этого блока. */
+:root {
+  --bg:          #f7f2ec;
+  --bg-alt:      #eee5da;
+  --surface:     #fffcf8;
+  --ink:         #2b211c;
+  --muted:       #6b5d55;
+  --line:        #e2d5c8;
+  --accent:      #9c4a2a;
+  --accent-ink:  #fff8f2;
+  --accent-soft: #f4e2d7;
+  --deep:        #2b211c;
+  --deep-ink:    #f3ebe2;
+  --deep-muted:  #bfae9f;
+  --deep-accent: #e08b62;
+
+  --photo-shade: linear-gradient(transparent, rgb(43 33 28 / .7));
+
+  /* Шкала отступов: 4, 8, 12, 16, 24, 32, 48. Других значений нет. */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  --container: 1200px;
+  --gutter: 20px;
+  --section-y: 56px;
+  --grid-gap: 16px;
+
+  --radius: 6px;
+  --radius-pill: 999px;
+  --tap: 44px;
+  --header-h: 64px;
+
+  --font-serif: 'Prata', Georgia, serif;
+  --font-sans: 'Manrope Variable', system-ui, sans-serif;
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: 40px;
+    --section-y: 96px;
+    --grid-gap: 24px;
+  }
+}

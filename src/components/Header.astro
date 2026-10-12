@@ -1,0 +1,123 @@
+---
+import Icon from './Icon.astro';
+import { site, telHref } from '../lib/data';
+
+const nav = [
+  { href: '#prices', label: 'Цены' },
+  { href: '#masters', label: 'Мастера' },
+  { href: '#works', label: 'Работы' },
+  { href: '#contacts', label: 'Контакты' },
+];
+---
+<header class="header" data-header>
+  <div class="container header__row">
+    <a class="header__logo" href="#top">{site.name}</a>
+
+    <nav class="header__nav" id="site-nav" aria-label="Разделы">
+      <ul>
+        {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+      <a class="header__phone" href={telHref(site.phone)}>{site.phone}</a>
+    </nav>
+
+    <button class="header__toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Меню" data-menu-toggle>
+      <Icon name="menu" />
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s;
+  }
+  .header.is-scrolled { border-bottom-color: var(--line); }
+  .header__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s4);
+    height: 72px;
+    transition: height .2s;
+  }
+  .header.is-scrolled .header__row { height: var(--header-h); }
+  .header__logo {
+    font-family: var(--font-serif);
+    font-size: 22px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .header__toggle {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    margin-right: calc(-1 * var(--s2));
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .header__toggle :global(svg) { width: 24px; height: 24px; }
+
+  .header__nav {
+    display: none;
+    position: absolute;
+    inset: 100% 0 auto;
+    padding: var(--s2) var(--gutter) var(--s5);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .header__nav.is-open { display: block; }
+  .header__nav a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .header__nav a:hover { color: var(--accent); }
+  .header__phone { font-variant-numeric: tabular-nums; margin-top: var(--s2); }
+
+  @media (min-width: 1080px) {
+    .header__toggle { display: none; }
+    .header__nav,
+    .header__nav.is-open {
+      display: flex;
+      align-items: center;
+      gap: var(--s6);
+      position: static;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    .header__nav ul { display: flex; gap: var(--s5); }
+    .header__phone { margin-top: 0; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const nav = document.getElementById('site-nav')!;
+
+  const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const setOpen = (open: boolean) => {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+  nav.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>

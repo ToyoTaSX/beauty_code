@@ -1,0 +1,60 @@
+---
+// Лента: свайп на телефоне, стрелки в заголовке секции от 720 px.
+// Прокручивается внутри себя, страница вбок не едет.
+interface Props {
+  id: string;
+  label: string;
+}
+const { id, label } = Astro.props;
+---
+<div class="rail" id={id} role="region" aria-label={label} tabindex="0">
+  <slot />
+</div>
+
+<style>
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 72%;
+    gap: var(--grid-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* карточки доходят до края экрана, первая выровнена по контейнеру */
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+  }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > :global(*) { scroll-snap-align: start; }
+
+  @media (min-width: 720px) {
+    .rail { grid-auto-columns: calc((100% - 2 * var(--gutter) - 2 * var(--grid-gap)) / 3); }
+  }
+  @media (min-width: 1080px) {
+    .rail { grid-auto-columns: calc((100% - 2 * var(--gutter) - 3 * var(--grid-gap)) / 4); }
+  }
+</style>
+
+<script>
+  function update(rail: HTMLElement) {
+    const prev = document.querySelector<HTMLButtonElement>(`[data-rail-prev="${rail.id}"]`);
+    const next = document.querySelector<HTMLButtonElement>(`[data-rail-next="${rail.id}"]`);
+    const max = rail.scrollWidth - rail.clientWidth - 2;
+    if (prev) prev.disabled = rail.scrollLeft <= 2;
+    if (next) next.disabled = rail.scrollLeft >= max;
+  }
+
+  for (const rail of document.querySelectorAll<HTMLElement>('.rail')) {
+    const step = () => rail.clientWidth * 0.8;
+    document
+      .querySelector(`[data-rail-prev="${rail.id}"]`)
+      ?.addEventListener('click', () => rail.scrollBy({ left: -step(), behavior: 'smooth' }));
+    document
+      .querySelector(`[data-rail-next="${rail.id}"]`)
+      ?.addEventListener('click', () => rail.scrollBy({ left: step(), behavior: 'smooth' }));
+    rail.addEventListener('scroll', () => update(rail), { passive: true });
+    new ResizeObserver(() => update(rail)).observe(rail);
+  }
+</script>

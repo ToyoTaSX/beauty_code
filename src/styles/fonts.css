@@ -1,0 +1,5 @@
+/* Локальные woff2 из @fontsource, font-display: swap. Подмножества заданы
+   unicode-range: браузер качает только latin и cyrillic, которые есть на странице. */
+@import '@fontsource/prata/cyrillic-400.css';
+@import '@fontsource/prata/latin-400.css';
+@import '@fontsource-variable/manrope/index.css';

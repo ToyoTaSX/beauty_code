@@ -1,0 +1,40 @@
+---
+// Конверсионный блок: фон-фото, заголовок, кнопки связи. 2-3 раза за страницу.
+import ContactButtons from './ContactButtons.astro';
+import { image } from '../lib/data';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  title: string;
+  text?: string;
+  photo?: string;
+}
+const { title, text, photo = '' } = Astro.props;
+const img = image(photo);
+const bg = img ? await getImage({ src: img, width: 1440, format: 'webp' }) : undefined;
+---
+<section class="cta" style={bg ? `--cta-bg: url(${bg.src})` : undefined}>
+  <div class="container cta__inner">
+    <h2 class="cta__title">{title}</h2>
+    {text && <p class="cta__text text">{text}</p>}
+    <ContactButtons onDeep />
+  </div>
+</section>
+
+<style>
+  .cta {
+    position: relative;
+    padding-block: var(--section-y);
+    /* ровное затемнение + градиент из стандарта: текст сверху тоже читается */
+    background:
+      linear-gradient(rgb(43 33 28 / .6), rgb(43 33 28 / .6)),
+      var(--photo-shade),
+      var(--cta-bg, none) center / cover,
+      var(--deep);
+    color: var(--deep-ink);
+  }
+  .cta__inner { display: grid; gap: var(--s5); justify-items: start; }
+  .cta__title { max-width: 18ch; }
+  .cta__text { color: var(--deep-muted); }
+  .cta :global(.contact__phone a) { color: var(--deep-ink); }
+</style>

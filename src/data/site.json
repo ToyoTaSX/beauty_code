@@ -1,0 +1,19 @@
+{
+  "example": true,
+  "name": "Код красоты",
+  "tagline": "Парикмахерская в Челябинске",
+  "phone": "+7 982 304-35-61",
+  "telegram": "ToyoTaSX",
+  "address": "Челябинск, ул. Конструктора Духова, 12, кв. 74",
+  "howToGet": "",
+  "hours": [
+    { "days": "Пример", "time": "часы уточняются" }
+  ],
+  "links": {
+    "vk": "https://vk.ru/club238401112",
+    "twoGis": "",
+    "yandexMaps": ""
+  },
+  "mapEmbedUrl": "",
+  "heroPhoto": "works/alfia-05.jpg"
+}
