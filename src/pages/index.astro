@@ -4,13 +4,11 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import SectionTitle from '../components/SectionTitle.astro';
 import Price from '../components/Price.astro';
-import Rail from '../components/Rail.astro';
-import MasterCard from '../components/MasterCard.astro';
 import Gallery from '../components/Gallery.astro';
 import Conversion from '../components/Conversion.astro';
 import Contacts from '../components/Contacts.astro';
 import Footer from '../components/Footer.astro';
-import { site, masters } from '../lib/data';
+import { site } from '../lib/data';
 
 const reviewLinks = [
   site.reviews.yandexMaps && { href: site.reviews.yandexMaps, label: 'Отзывы на Яндекс Картах' },
@@ -32,16 +30,7 @@ const reviewLinks = [
       </div>
     </section>
 
-    <section class="section" aria-labelledby="masters">
-      <div class="container">
-        <SectionTitle id="masters" eyebrow="Команда" title="Мастера" railId="masters-rail" />
-        <Rail id="masters-rail" label="Мастера">
-          {masters.map((m) => <MasterCard {...m} />)}
-        </Rail>
-      </div>
-    </section>
-
-    <Conversion photo="works/olga-08.jpg" title="Запишитесь на удобное время" text="Позвоните или напишите в Telegram - ответим и подберём мастера." />
+    <Conversion photo="bg/alfia-01.jpg" title="Запишитесь на удобное время" text="Позвоните или напишите в Telegram - ответим и подберём мастера." />
 
     <section class="section" aria-labelledby="works">
       <div class="container">
@@ -68,7 +57,7 @@ const reviewLinks = [
       </div>
     </section>
 
-    <Conversion photo="works/olga-07.jpg" title="Остались вопросы?" text="Напишите мастеру в Telegram или позвоните - всё расскажем." />
+    <Conversion photo="bg/alfia-03.jpg" title="Остались вопросы?" text="Напишите мастеру в Telegram или позвоните - всё расскажем." />
   </main>
   <Footer />
 </Base>

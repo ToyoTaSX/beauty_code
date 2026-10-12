@@ -11,7 +11,7 @@ interface Props {
 }
 const { title, text, photo = '' } = Astro.props;
 const img = image(photo);
-const bg = img ? await getImage({ src: img, width: 1440, format: 'webp' }) : undefined;
+const bg = img ? await getImage({ src: img, width: Math.min(1440, img.width), format: 'webp', quality: 80 }) : undefined;
 ---
 <section class="cta" style={bg ? `--cta-bg: url(${bg.src})` : undefined}>
   <div class="container cta__inner">

@@ -20,7 +20,7 @@ const [w, h] = ratio.split('x').map(Number);
     src={img}
     alt={alt}
     formats={['avif', 'webp']}
-    widths={[360, 540, 720, 1080, 1440].filter((x) => x <= img.width)}
+    widths={[...new Set([360, 540, 720, 1080, 1440].filter((x) => x < img.width).concat(img.width))]}
     sizes={sizes}
     loading={eager ? 'eager' : 'lazy'}
     fetchpriority={eager ? 'high' : 'auto'}
