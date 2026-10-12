@@ -85,6 +85,9 @@ npm run check      # astro check: типы и схемы данных
 
 ## GitHub Pages - на что смотреть
 
+- Репозиторий: https://github.com/ToyoTaSX/beauty_code, сайт:
+  https://toyotasx.github.io/beauty_code/. Деплой - каждый пуш в `main`.
+
 - Сайт на `https://<user>.github.io/<repo>/`: в `astro.config.mjs` задать
   `site` и `base`, все ссылки и пути к ассетам строить через
   `import.meta.env.BASE_URL`. Когда появится свой домен - `base: '/'` и файл
